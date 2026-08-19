@@ -4,7 +4,7 @@
 
 1. User signs in with email + password (`lib/auth/actions.ts`).
 2. Password is checked with bcrypt (`lib/auth/password.ts`).
-3. A random 32-byte token is created. The database stores `sha256(AUTH_SECRET + ":" + token)`. The browser stores the raw token in an httpOnly cookie named `atrium_session`.
+3. A random 32-byte token is created. The database stores `sha256(AUTH_SECRET + ":" + token)`. The browser stores the raw token in an httpOnly cookie named `nivia_session`.
 4. Cookie: `httpOnly`, `sameSite=lax`, `secure` in production, 30-day expiry.
 5. Logout deletes the `Session` row and the cookie.
 
@@ -49,6 +49,10 @@ All in `lib/permissions/index.ts`. Mental model:
 | Can they operate it (publish, change issue status, see resident directory)? | `canManageBuilding` |
 | Can they file an issue? | `canCreateIssue` — **residents of that building only**, not every viewer |
 | Can they see this announcement? | Managers: yes. Residents: only if `publishedAt` is set and they can view the building |
+| Can they see this vote? | `canViewVote` — anyone who can view the building |
+| Can they create a building vote? | `canCreateVote` — same as manage |
+| Can they cast a vote? | `canCastVote` — **residents of that building only** |
+| Can they see option counts? | `canViewVoteResults` — staff always; residents only after `endsAt` |
 | Can they see this issue? | Managers: yes. Residents: only if they are `reporterId` |
 | Which app shell? | `canAccessManagerConsole` / `canAccessAdminConsole` / `canAccessResidentApp` |
 
@@ -68,6 +72,6 @@ Login redirects by highest console:
 
 ## Tests
 
-`tests/phase2.test.ts` and `tests/phase25.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
+`tests/phase2.test.ts`, `tests/phase25.test.ts`, and `tests/phase3.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
 
 When you add a capability, add a test that the wrong role is rejected.

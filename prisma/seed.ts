@@ -145,7 +145,7 @@ async function createUser(input: {
 }
 
 async function main() {
-  console.log("Seeding Atrium demo data...");
+  console.log("Seeding NIVIA demo data...");
   await resetDatabase();
 
   const organization = await prisma.organization.create({

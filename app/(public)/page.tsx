@@ -10,10 +10,11 @@ export default function HomePage() {
             Residential operations
           </p>
           <h1 className="mt-4 max-w-xl font-serif text-5xl leading-tight tracking-tight sm:text-6xl">
-            {APP_TAGLINE}
+            Welcome to {APP_NAME}
           </h1>
+          <p className="mt-4 max-w-xl text-xl leading-8 text-muted">{APP_TAGLINE}</p>
           <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
-            Atrium is built for buildings, house councils, and professional management
+            {APP_NAME} is built for buildings, house councils, and professional management
             companies. Communication, issues, votes, documents, and operations live in one
             shared system — not a chat thread.
           </p>
@@ -66,7 +67,7 @@ export default function HomePage() {
         ))}
       </section>
       <p className="pt-8 text-sm text-muted">
-        {APP_NAME} · North Macedonia first, designed to expand.
+        Everything happening in your building, in one place.
       </p>
     </main>
   );

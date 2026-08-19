@@ -16,7 +16,7 @@ Without that, every later feature would invent its own tenancy.
 
 ## What shipped
 
-- Next.js App Router app branded **Atrium**
+- Next.js App Router app branded **NIVIA**
 - Docker PostgreSQL 16 on host port **5434**
 - Prisma schema for the full MVP domain (including Vote/Document/Notification tables used later)
 - Migration `20260819080001_init`
@@ -32,7 +32,7 @@ Without that, every later feature would invent its own tenancy.
 
 ### Database
 
-`docker-compose.yml` runs `atrium-postgres`. `DATABASE_URL` points at `localhost:5434`. Prisma 7 uses `prisma.config.ts` plus `@prisma/adapter-pg`.
+`docker-compose.yml` runs `nivia-postgres`. `DATABASE_URL` points at `localhost:5434`. Prisma 7 uses `prisma.config.ts` plus `@prisma/adapter-pg`.
 
 ### Auth
 

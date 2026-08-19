@@ -2,7 +2,7 @@
 
 Source of truth: `prisma/schema.prisma`. One migration so far: `prisma/migrations/20260819080001_init`.
 
-The schema was designed in Phase 1 to cover later phases. Vote and Document tables exist and are seeded. Their **workflows are not implemented**.
+The schema was designed in Phase 1 to cover later phases. Vote workflows shipped in Phase 3. Document tables exist and are seeded; their **workflows are not implemented**.
 
 ## Tenancy
 
@@ -43,7 +43,7 @@ Belongs to a building. `publishedAt` null means draft (residents must not see it
 
 ### Issue
 
-Belongs to a building, optional apartment, required reporter. Status: `REPORTED → IN_PROGRESS → RESOLVED → CLOSED`. Residents create; managers/admins change status. Residents may only see **their own** issues.
+Belongs to a building, optional apartment, required reporter. Status: `REPORTED → IN_PROGRESS → RESOLVED → CLOSED`. Residents create; managers/admins change status. Residents may only see **their own** issues. `apartmentId` is the reporter’s unit, not a public/private flag. Shared building issues and duplicate-report merging are on the [roadmap](./05-roadmap.md), not built.
 
 `imageUrl` stores a path served by `/api/files/...`, not the file bytes.
 
@@ -55,13 +55,13 @@ This is the **product history** (“what happened to this ticket”). It is not 
 
 ### ActivityLog
 
-Cross-entity audit for dashboards: `ANNOUNCEMENT_PUBLISHED`, `ISSUE_CREATED`, `ISSUE_STATUS_CHANGED`, plus enums reserved for vote/document/member events.
+Cross-entity audit for dashboards: `ANNOUNCEMENT_PUBLISHED`, `ISSUE_CREATED`, `ISSUE_STATUS_CHANGED`, `VOTE_CREATED`, `VOTE_CAST`, plus enums reserved for document/member events.
 
 Keep both: history is for the issue page; activity is for “what happened in this building”.
 
 ### Notification
 
-Per-user inbox row. `userId` is the owner. `buildingId` is optional context. `data` JSON holds `announcementId`, `issueId`, `kind`, `status`. `readAt` null means unread.
+Per-user inbox row. `userId` is the owner. `buildingId` is optional context. `data` JSON holds `announcementId`, `issueId`, `voteId`, `kind`, `status`. `readAt` null means unread.
 
 Indexes `[userId, readAt]` and `[userId, createdAt]` exist because the bell and inbox always query by user.
 
@@ -78,7 +78,7 @@ Issue status updates to the reporter use `SYSTEM` plus `data.kind = "ISSUE_UPDAT
 
 ### Vote / VoteOption / VoteResponse
 
-Ready for Phase 3. `VoteResponse` has `@@unique([voteId, userId])` so a resident cannot vote twice. Do not change that when building the UI.
+A vote belongs to a building. `startsAt` / `endsAt` define the window: upcoming, open, or closed. Residents cast at most one response (`@@unique([voteId, userId])`). Option counts are shown to staff at any time and to residents after close. Do not drop that unique constraint.
 
 ### Document
 

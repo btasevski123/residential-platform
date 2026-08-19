@@ -63,9 +63,9 @@ If the nav item exists but the workflow does not:
 
 ## Naming
 
-- Product: **Atrium**
-- Cookie: `atrium_session`
-- Docker: `atrium-postgres`
+- Product: **NIVIA**
+- Cookie: `nivia_session`
+- Docker: `nivia-postgres`
 - Roles: Prisma enums in `SCREAMING_SNAKE`; UI labels via `formatEnumLabel`
 
 ## Next.js 16

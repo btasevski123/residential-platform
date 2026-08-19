@@ -120,7 +120,7 @@ Presentation (`lib/notifications/presentation.ts`): labels and hrefs, safe to im
 
 ## What “good” looks like for a new domain
 
-Example: voting (Phase 3).
+Example: voting (Phase 3) followed this shape.
 
 1. Zod schema in `lib/validations/votes.ts`
 2. `canCreateVote` / `canCastVote` already exist — use them

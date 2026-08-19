@@ -100,8 +100,24 @@ export function canCreateVote(ctx: AccessContext, building: BuildingRef) {
   return canManageBuilding(ctx, building);
 }
 
+export function canViewVote(ctx: AccessContext, building: BuildingRef) {
+  return canViewBuilding(ctx, building);
+}
+
 export function canCastVote(ctx: AccessContext, building: BuildingRef) {
   return isResident(ctx, building.id);
+}
+
+export function canViewVoteResults(
+  ctx: AccessContext,
+  vote: { endsAt: Date },
+  building: BuildingRef,
+) {
+  if (canManageBuilding(ctx, building)) {
+    return true;
+  }
+
+  return canViewVote(ctx, building) && new Date() > vote.endsAt;
 }
 
 export function canManageDocuments(ctx: AccessContext, building: BuildingRef) {

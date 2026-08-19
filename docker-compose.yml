@@ -1,21 +1,21 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: atrium-postgres
+    container_name: nivia-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: atrium
-      POSTGRES_PASSWORD: atrium
-      POSTGRES_DB: atrium
+      POSTGRES_USER: nivia
+      POSTGRES_PASSWORD: nivia
+      POSTGRES_DB: nivia
     ports:
       - "5434:5432"
     volumes:
-      - atrium_pg_data:/var/lib/postgresql/data
+      - nivia_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atrium -d atrium"]
+      test: ["CMD-SHELL", "pg_isready -U nivia -d nivia"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  atrium_pg_data:
+  nivia_pg_data:

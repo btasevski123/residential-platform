@@ -19,7 +19,9 @@ export async function getResidentDashboard(ctx: AccessContext, buildingId: strin
 
   const membership = ctx.memberships.find((item) => item.buildingId === buildingId);
 
-  const [featuredAnnouncements, recentIssues, notifications] = await Promise.all([
+  const now = new Date();
+
+  const [featuredAnnouncements, recentIssues, notifications, openVotes] = await Promise.all([
     prisma.announcement.findMany({
       where: {
         buildingId,
@@ -40,6 +42,15 @@ export async function getResidentDashboard(ctx: AccessContext, buildingId: strin
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    prisma.vote.findMany({
+      where: { buildingId, startsAt: { lte: now }, endsAt: { gte: now } },
+      orderBy: { endsAt: "asc" },
+      take: 2,
+      include: {
+        _count: { select: { responses: true } },
+        responses: { where: { userId: ctx.user.id }, take: 1, select: { id: true } },
+      },
+    }),
   ]);
 
   return {
@@ -48,6 +59,7 @@ export async function getResidentDashboard(ctx: AccessContext, buildingId: strin
     featuredAnnouncement: featuredAnnouncements[0] ?? null,
     recentIssues,
     notifications,
+    openVotes,
   };
 }
 

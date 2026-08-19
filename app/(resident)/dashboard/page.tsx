@@ -6,8 +6,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { QuickAction } from "@/components/ui/quick-action";
 import { ButtonLink } from "@/components/ui/button";
 import { StatusBadge } from "@/components/issues/status-badge";
+import { VoteStatusBadge } from "@/components/votes/vote-status-badge";
 import { FeaturedAnnouncement } from "@/components/announcements/announcement-list-item";
-import { formatRelativeTime, greetingForNow } from "@/lib/utils";
+import { formatDateTime, formatRelativeTime, greetingForNow } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function ResidentDashboardPage() {
@@ -85,13 +86,44 @@ export default async function ResidentDashboardPage() {
         </Card>
       </section>
 
+      {data.openVotes.length > 0 ? (
+        <section className="mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Open votes</CardTitle>
+              <ButtonLink href="/voting" variant="ghost" size="sm">
+                View all votes
+              </ButtonLink>
+            </CardHeader>
+            <div className="space-y-3">
+              {data.openVotes.map((vote) => (
+                <Link
+                  key={vote.id}
+                  href={`/voting/${vote.id}`}
+                  className="flex items-center justify-between gap-3 rounded-lg bg-card-muted px-4 py-3"
+                >
+                  <div>
+                    <p className="font-medium">{vote.title}</p>
+                    <p className="text-xs text-muted">
+                      Closes {formatDateTime(vote.endsAt)}
+                      {vote.responses.length > 0 ? " · You voted" : ""}
+                    </p>
+                  </div>
+                  <VoteStatusBadge status="OPEN" />
+                </Link>
+              ))}
+            </div>
+          </Card>
+        </section>
+      ) : null}
+
       <section className="mb-6">
         <h2 className="mb-3 font-serif text-lg">Quick actions</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <QuickAction href="/issues/new" title="Report a problem" description="Tell the building team what needs fixing." />
           <QuickAction href="/announcements" title="Announcements" description="Read the latest building news." />
           <QuickAction href="/notifications" title="Notifications" description="Open your inbox." />
-          <QuickAction href="/voting" title="Voting" description="Building votes." comingSoon />
+          <QuickAction href="/voting" title="Voting" description="Cast one vote per poll." />
           <QuickAction href="/documents" title="Documents" description="House rules and files." comingSoon />
         </div>
       </section>

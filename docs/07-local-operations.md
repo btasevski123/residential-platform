@@ -53,7 +53,7 @@ Buildings: Skopje Center 12, Aerodrom 25, Karposh 8, Centar 44, Vodnjanska 18
 
 Admin and resident belong to **Skopje Center 12** (resident apartment **4**).
 
-## Demo script (after Phase 2.5)
+## Demo script (after Phase 3)
 
 ### A — Management company
 
@@ -98,6 +98,18 @@ Admin and resident belong to **Skopje Center 12** (resident apartment **4**).
 1. Log in as resident.
 2. Inbox: `Your issue is now in progress.`
 3. My issues: elevator is **In Progress**.
+
+### G — Voting
+
+1. Log in as admin → **Voting** → **Create vote**.
+2. Title: `Stairwell lighting`
+3. Two options, end date next week. Create.
+4. Log in as resident. Inbox: `New vote: Stairwell lighting`.
+5. Open the vote and cast one option.
+6. Try again: already voted.
+7. Admin detail shows live counts. Resident sees their choice until the vote closes, then the tally.
+
+Seed also has **Facade renovation this autumn** (open; Elena already voted) and **Intercom upgrade** (closed, with results).
 
 ## Tests
 

@@ -1,6 +1,6 @@
 # Product
 
-Atrium is a **digital operating platform for residential buildings**.
+NIVIA is a **digital operating platform for residential buildings**.
 
 The first market is **North Macedonia**. The data model and tenancy are designed so the same product can expand to other countries later.
 
@@ -12,13 +12,13 @@ Residential buildings still run on Viber groups, paper notices, and informal Wha
 - House councils that need a record of what was published and decided
 - Management companies that operate many buildings and need a portfolio view
 
-Atrium is the system of record for the **building**, not a chat replacement.
+NIVIA is the system of record for the **building**, not a chat replacement.
 
 ## Two sides of the same product
 
 | Side | Who | What they need |
 | --- | --- | --- |
-| B2C | Residents and house councils | Home screen, news, report a problem, later votes and documents |
+| B2C | Residents and house councils | Home screen, news, report a problem, votes; later documents |
 | B2B | Management companies | Portfolio of buildings, attention (open issues), staff tools |
 
 Both sides share one database and one permission model. A management company user and a resident are different **memberships**, not different applications.
@@ -37,15 +37,15 @@ Organization (CityHome Management)
         ├── Membership: building admin
         ├── Announcements
         ├── Issues
-        ├── Votes (schema ready, UI not built)
+        ├── Votes
         └── Documents (schema ready, UI not built)
 ```
 
 ## Product name in the UI
 
-The application is branded **Atrium** (`lib/constants.ts`). The repository folder may still be named `residential-platform`.
+The application is branded **NIVIA** (`APP_NAME` in `lib/constants.ts`), with the tagline **Connected living, simplified.** (`APP_TAGLINE`). The repository folder may still be named `residential-platform`.
 
-## What Atrium is not (yet, and by design)
+## What NIVIA is not (yet, and by design)
 
 These are later phases or out of scope for the current MVP. Do not implement them as side effects of other work:
 
@@ -55,6 +55,7 @@ These are later phases or out of scope for the current MVP. Do not implement the
 - Payments, accounting, or marketplace
 - AI
 - Advanced maintenance / work-order systems
+- Private vs building issue scope, and merging duplicate resident reports into one building issue (today residents see only their own tickets)
 - Building-wide issue aggregation for managers (portfolio counts exist; a full board does not)
 
 ## Demo organization

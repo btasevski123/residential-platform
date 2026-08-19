@@ -79,10 +79,10 @@ export function notificationHref(
 
   if (data.voteId) {
     if (viewer === "resident") {
-      return "/voting";
+      return `/voting/${data.voteId}`;
     }
     if (viewer === "admin") {
-      return "/admin/voting";
+      return `/admin/voting/${data.voteId}`;
     }
   }
 

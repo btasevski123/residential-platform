@@ -39,7 +39,7 @@ export default async function ProfilePage() {
         <Card className="space-y-3">
           <p className="font-medium">More in this building</p>
           <Link href="/voting" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
-            Voting <span className="text-muted">· Coming soon</span>
+            Voting
           </Link>
           <Link href="/documents" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
             Documents <span className="text-muted">· Coming soon</span>

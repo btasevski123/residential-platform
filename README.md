@@ -1,8 +1,8 @@
-# Atrium
+# NIVIA
 
-A digital operating platform for residential buildings. First market: North Macedonia. Architecture is multi-tenant from day one.
+A digital operating platform for residential buildings. Architecture is multi-tenant from day one.
 
-Atrium is **not** a Viber/chat replacement. The **building** is the core entity. Residents, house councils, and management companies share one system. Access comes from memberships, never from client-supplied IDs.
+NIVIA is **not** a Viber/chat replacement. The **building** is the core entity. Residents, house councils, and management companies share one system. Access comes from memberships, never from client-supplied IDs.
 
 **Documentation (start here):** [docs/README.md](./docs/README.md)
 
@@ -13,14 +13,15 @@ Atrium is **not** a Viber/chat replacement. The **building** is the core entity.
 | 1 | Postgres, Prisma, sessions, tenancy, roles, seed, three consoles | Done — [docs](./docs/phases/01-foundation.md) |
 | 2 | Announcements, issues, photos, history, activity, notification *writes* | Done — [docs](./docs/phases/02-announcements-and-issues.md) |
 | 2.5 | Polish, dashboards, in-app inbox, mobile, empty/loading/error | Done — [docs](./docs/phases/02.5-polish-and-notifications.md) |
-| 3 | Voting workflow | Not started — [roadmap](./docs/05-roadmap.md) |
+| 3 | Voting workflow | Done — [docs](./docs/phases/03-voting.md) |
+| 4 | Documents | Not started — [roadmap](./docs/05-roadmap.md) |
 
 ## Stack
 
 - Next.js 16 App Router, TypeScript, Tailwind CSS v4
 - PostgreSQL 16 (Docker, host port **5434**)
 - Prisma 7 with `@prisma/adapter-pg`
-- Zod, bcrypt sessions (`atrium_session` httpOnly cookie)
+- Zod, bcrypt sessions (`nivia_session` httpOnly cookie)
 
 ## Setup
 
