@@ -9,7 +9,7 @@ import {
   canViewIssue,
   canManageIssues,
 } from "@/lib/permissions";
-import { fileKeyFromUrl, storage } from "@/lib/storage";
+import { fileKeyFromUrl, storage, assertImageFile } from "@/lib/storage";
 import { issueSchema, issueStatusSchema, type IssueInput } from "@/lib/validations/issues";
 import type { IssueStatus } from "@/generated/prisma/enums";
 import type { AccessContext } from "@/types/auth";
@@ -136,6 +136,7 @@ export async function createIssue(
   let storedKey: string | null = null;
 
   if (photo && photo.size > 0) {
+    assertImageFile(photo);
     const stored = await storage.save(photo, `issues/${building.id}`);
     storedImageUrl = stored.url;
     storedKey = stored.key;

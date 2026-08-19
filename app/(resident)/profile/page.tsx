@@ -42,7 +42,7 @@ export default async function ProfilePage() {
             Voting
           </Link>
           <Link href="/documents" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
-            Documents <span className="text-muted">· Coming soon</span>
+            Documents
           </Link>
           <Link href="/notifications" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
             Notifications

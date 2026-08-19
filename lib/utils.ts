@@ -49,6 +49,22 @@ export function greetingForNow(date = new Date()) {
   return "Good evening";
 }
 
+export function formatFileSize(bytes: number | null | undefined) {
+  if (!bytes || bytes <= 0) {
+    return null;
+  }
+
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${Math.round(bytes / 1024)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function formatRelativeTime(value: Date | string) {
   const date = new Date(value);
   const diffMs = Date.now() - date.getTime();

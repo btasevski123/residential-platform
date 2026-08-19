@@ -37,7 +37,7 @@ Unauthorized users redirect to `/login`. Wrong-role users redirect to `getDefaul
 
 `proxy.ts` redirects to login if a protected path has **no cookie**. It does not verify the session signature or role. Forged cookies still fail in `getSessionFromCookie`. Missing cookies never hit RSC.
 
-Protected prefixes include `/dashboard`, `/admin`, `/manager`, `/notifications`, `/issues`, `/announcements`, `/api/files`, and the coming-soon resident paths.
+Protected prefixes include `/dashboard`, `/admin`, `/manager`, `/notifications`, `/issues`, `/announcements`, `/voting`, `/documents`, and `/api/files`.
 
 ## Permission helpers
 
@@ -54,6 +54,8 @@ All in `lib/permissions/index.ts`. Mental model:
 | Can they cast a vote? | `canCastVote` — **residents of that building only** |
 | Can they see option counts? | `canViewVoteResults` — staff always; residents only after `endsAt` |
 | Can they see this issue? | Managers: yes. Residents: only if they are `reporterId` |
+| Can they see building files? | `canViewDocuments` — anyone who can view the building |
+| Can they upload or delete files? | `canManageDocuments` — same as manage |
 | Which app shell? | `canAccessManagerConsole` / `canAccessAdminConsole` / `canAccessResidentApp` |
 
 Org staff (`MANAGER` or `ORG_ADMIN`) can view and manage every building in their organization. That is why a CityHome manager can open `/admin/...` for Skopje Center 12 as well as `/manager/...`.
@@ -68,10 +70,10 @@ Login redirects by highest console:
 
 ## File access
 
-`/api/files/[...path]` maps to `uploads/`. The route must resolve the related issue (or future document) and call `canViewIssue` / equivalent. Path traversal is rejected in `lib/storage` (`assertSafeKey`).
+`/api/files/[...path]` maps to `uploads/`. The route must resolve the related issue or document and call `canViewIssue` / `canViewDocuments`. Path traversal is rejected in `lib/storage` (`assertSafeKey`).
 
 ## Tests
 
-`tests/phase2.test.ts`, `tests/phase25.test.ts`, and `tests/phase3.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
+`tests/phase2.test.ts`, `tests/phase25.test.ts`, `tests/phase3.test.ts`, and `tests/phase4.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
 
 When you add a capability, add a test that the wrong role is rejected.

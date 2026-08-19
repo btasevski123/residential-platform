@@ -53,7 +53,7 @@ Buildings: Skopje Center 12, Aerodrom 25, Karposh 8, Centar 44, Vodnjanska 18
 
 Admin and resident belong to **Skopje Center 12** (resident apartment **4**).
 
-## Demo script (after Phase 3)
+## Demo script (after Phase 4)
 
 ### A — Management company
 
@@ -110,6 +110,17 @@ Admin and resident belong to **Skopje Center 12** (resident apartment **4**).
 7. Admin detail shows live counts. Resident sees their choice until the vote closes, then the tally.
 
 Seed also has **Facade renovation this autumn** (open; Elena already voted) and **Intercom upgrade** (closed, with results).
+
+### H — Documents
+
+1. Log in as admin → **Documents** → **Upload document**.
+2. Title: `Stairwell lighting quote`
+3. Category: **Maintenance**
+4. Attach a small `.txt` or PDF. Upload.
+5. Log in as resident → **Documents** → open the file → **Download**.
+6. Admin can delete it; it disappears from the resident list.
+
+Seed also has **House rules 2026** and related files. If those rows still point at `/demo/...`, they list but do not download until you upload a new copy or re-seed.
 
 ## Tests
 

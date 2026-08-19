@@ -1,5 +1,7 @@
 import "dotenv/config";
 
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
 import { hashPassword } from "../lib/auth/password";
@@ -124,6 +126,19 @@ async function resetDatabase() {
   await prisma.building.deleteMany();
   await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
+}
+
+async function writeDemoDocument(buildingId: string, slug: string, body: string) {
+  const key = `documents/${buildingId}/${slug}.txt`;
+  const absolute = path.join(process.cwd(), "uploads", key);
+  await mkdir(path.dirname(absolute), { recursive: true });
+  await writeFile(absolute, body, "utf8");
+  return {
+    fileUrl: `/api/files/${key}`,
+    fileName: `${slug}.txt`,
+    mimeType: "text/plain",
+    sizeBytes: Buffer.byteLength(body),
+  };
 }
 
 async function createUser(input: {
@@ -495,30 +510,48 @@ async function main() {
     });
   }
 
+  const houseRulesFile = await writeDemoDocument(
+    skopjeCenter.id,
+    "house-rules-2026",
+    "Quiet hours are 22:00–07:00. Dispose of waste in the designated bins. Bicycles belong in the basement racks.",
+  );
+  const minutesFile = await writeDemoDocument(
+    skopjeCenter.id,
+    "july-minutes",
+    "The July house council agreed to obtain a second offer for the facade work and to keep the current cleaning schedule.",
+  );
+  const expensesFile = await writeDemoDocument(
+    skopjeCenter.id,
+    "q2-expenses",
+    "Shared expenses April–June: cleaning, elevator service, and electricity for common areas.",
+  );
+  const contractFile = await writeDemoDocument(
+    skopjeCenter.id,
+    "elevator-contract",
+    "Current elevator maintenance contract covers both cabins, with a 24-hour response for breakdowns.",
+  );
+
+  const houseRules = await prisma.document.create({
+    data: {
+      buildingId: skopjeCenter.id,
+      uploadedById: admin.id,
+      title: "House rules 2026",
+      description: "Common area rules, quiet hours, and waste disposal instructions.",
+      category: "RULES",
+      ...houseRulesFile,
+      createdAt: daysAgo(18),
+    },
+  });
+
   await prisma.document.createMany({
     data: [
-      {
-        buildingId: skopjeCenter.id,
-        uploadedById: admin.id,
-        title: "House rules 2026",
-        description: "Common area rules, quiet hours, and waste disposal instructions.",
-        category: "RULES",
-        fileUrl: "/demo/house-rules.txt",
-        fileName: "house-rules-2026.txt",
-        mimeType: "text/plain",
-        sizeBytes: 1240,
-        createdAt: daysAgo(18),
-      },
       {
         buildingId: skopjeCenter.id,
         uploadedById: admin.id,
         title: "Meeting minutes — July",
         description: "Decisions from the July house council meeting.",
         category: "MEETINGS",
-        fileUrl: "/demo/july-minutes.txt",
-        fileName: "july-minutes.txt",
-        mimeType: "text/plain",
-        sizeBytes: 980,
+        ...minutesFile,
         createdAt: daysAgo(9),
       },
       {
@@ -527,10 +560,7 @@ async function main() {
         title: "Q2 shared expenses",
         description: "Summary of shared building expenses for April–June.",
         category: "FINANCES",
-        fileUrl: "/demo/q2-expenses.txt",
-        fileName: "q2-expenses.txt",
-        mimeType: "text/plain",
-        sizeBytes: 1560,
+        ...expensesFile,
         createdAt: daysAgo(14),
       },
       {
@@ -539,10 +569,7 @@ async function main() {
         title: "Elevator service contract",
         description: "Current maintenance contract for both elevators.",
         category: "CONTRACTS",
-        fileUrl: "/demo/elevator-contract.txt",
-        fileName: "elevator-contract.txt",
-        mimeType: "text/plain",
-        sizeBytes: 2100,
+        ...contractFile,
         createdAt: daysAgo(40),
       },
     ],
@@ -649,7 +676,7 @@ async function main() {
         actorId: admin.id,
         action: "DOCUMENT_UPLOADED",
         entityType: "Document",
-        entityId: "house-rules",
+        entityId: houseRules.id,
         metadata: { title: "House rules 2026" },
         createdAt: daysAgo(18),
       },

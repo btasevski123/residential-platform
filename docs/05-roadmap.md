@@ -6,18 +6,11 @@ Nothing below is implemented unless a later phase doc says it is. Do not treat t
 
 **Status:** done. See [Phase 3](./phases/03-voting.md).
 
-## Phase 4 (next) — Documents
+## Phase 4 — Documents
 
-**Why after voting:** Files are slower (storage, MIME, access). The `Document` model and local storage adapter already point the way.
+**Status:** done. See [Phase 4](./phases/04-documents.md).
 
-**Should include**
-
-- Admin upload for a building
-- Resident list/download with `canViewDocuments`
-- Categories already on the enum
-- Reuse `lib/storage` (extend beyond images)
-
-## Phase 5 — Richer communications
+## Phase 5 (next) — Richer communications
 
 - Optional `ISSUE_UPDATE` enum if JSON `kind` becomes awkward
 - Email or web push **on top of** the existing Notification rows (`dispatchPushPlaceholder`)

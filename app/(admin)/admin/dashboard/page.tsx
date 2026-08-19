@@ -34,16 +34,19 @@ export default async function AdminDashboardPage() {
         <StatCard label="Residents" value={data.residentCount} />
         <StatCard label="Open issues" value={data.openIssueCount} />
         <StatCard label="Active votes" value={data.activeVoteCount} />
-        <StatCard label="Documents" value={data.documentCount} hint="Coming soon" />
+        <StatCard label="Documents" value={data.documentCount} />
       </div>
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <ButtonLink href="/admin/announcements/new">Create announcement</ButtonLink>
         <ButtonLink href="/admin/issues" variant="secondary">
           View issues
         </ButtonLink>
         <ButtonLink href="/admin/voting/new" variant="secondary">
           Create vote
+        </ButtonLink>
+        <ButtonLink href="/admin/documents/new" variant="secondary">
+          Upload document
         </ButtonLink>
         <ButtonLink href="/admin/residents" variant="secondary">
           View residents

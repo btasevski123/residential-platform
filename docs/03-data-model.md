@@ -2,7 +2,7 @@
 
 Source of truth: `prisma/schema.prisma`. One migration so far: `prisma/migrations/20260819080001_init`.
 
-The schema was designed in Phase 1 to cover later phases. Vote workflows shipped in Phase 3. Document tables exist and are seeded; their **workflows are not implemented**.
+The schema was designed in Phase 1 to cover later phases. Vote workflows shipped in Phase 3. Document workflows shipped in Phase 4.
 
 ## Tenancy
 
@@ -55,7 +55,7 @@ This is the **product history** (“what happened to this ticket”). It is not 
 
 ### ActivityLog
 
-Cross-entity audit for dashboards: `ANNOUNCEMENT_PUBLISHED`, `ISSUE_CREATED`, `ISSUE_STATUS_CHANGED`, `VOTE_CREATED`, `VOTE_CAST`, plus enums reserved for document/member events.
+Cross-entity audit for dashboards: `ANNOUNCEMENT_PUBLISHED`, `ISSUE_CREATED`, `ISSUE_STATUS_CHANGED`, `VOTE_CREATED`, `VOTE_CAST`, `DOCUMENT_UPLOADED`, plus enums reserved for member events.
 
 Keep both: history is for the issue page; activity is for “what happened in this building”.
 
@@ -82,7 +82,7 @@ A vote belongs to a building. `startsAt` / `endsAt` define the window: upcoming,
 
 ### Document
 
-Ready for the documents phase. Metadata in Postgres; file bytes should follow the storage adapter pattern (not the database).
+Belongs to a building. Metadata in Postgres; bytes on disk via `lib/storage` (`fileUrl` is `/api/files/...`). Categories: `MEETINGS | RULES | FINANCES | MAINTENANCE | CONTRACTS | OTHER`. Anyone who can view the building can list/download; only staff can upload or delete.
 
 ### Session
 

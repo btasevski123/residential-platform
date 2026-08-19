@@ -12,6 +12,8 @@ const messages: Record<string, string> = {
   status: "Issue status updated.",
   "vote-created": "Vote created. Residents have been notified.",
   voted: "Your vote has been recorded.",
+  "document-uploaded": "Document uploaded.",
+  "document-deleted": "Document deleted.",
 };
 
 export function FlashNotice() {

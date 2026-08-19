@@ -18,7 +18,7 @@ NIVIA is the system of record for the **building**, not a chat replacement.
 
 | Side | Who | What they need |
 | --- | --- | --- |
-| B2C | Residents and house councils | Home screen, news, report a problem, votes; later documents |
+| B2C | Residents and house councils | Home screen, news, report a problem, votes, documents |
 | B2B | Management companies | Portfolio of buildings, attention (open issues), staff tools |
 
 Both sides share one database and one permission model. A management company user and a resident are different **memberships**, not different applications.
@@ -38,7 +38,7 @@ Organization (CityHome Management)
         ├── Announcements
         ├── Issues
         ├── Votes
-        └── Documents (schema ready, UI not built)
+        └── Documents
 ```
 
 ## Product name in the UI

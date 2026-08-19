@@ -7,6 +7,7 @@ import { QuickAction } from "@/components/ui/quick-action";
 import { ButtonLink } from "@/components/ui/button";
 import { StatusBadge } from "@/components/issues/status-badge";
 import { VoteStatusBadge } from "@/components/votes/vote-status-badge";
+import { DocumentCategoryBadge } from "@/components/documents/document-category-badge";
 import { FeaturedAnnouncement } from "@/components/announcements/announcement-list-item";
 import { formatDateTime, formatRelativeTime, greetingForNow } from "@/lib/utils";
 import Link from "next/link";
@@ -117,6 +118,31 @@ export default async function ResidentDashboardPage() {
         </section>
       ) : null}
 
+      {data.recentDocuments.length > 0 ? (
+        <section className="mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+              <ButtonLink href="/documents" variant="ghost" size="sm">
+                View all files
+              </ButtonLink>
+            </CardHeader>
+            <div className="space-y-3">
+              {data.recentDocuments.map((document) => (
+                <Link
+                  key={document.id}
+                  href={`/documents/${document.id}`}
+                  className="flex items-center justify-between gap-3 rounded-lg bg-card-muted px-4 py-3"
+                >
+                  <p className="font-medium">{document.title}</p>
+                  <DocumentCategoryBadge category={document.category} />
+                </Link>
+              ))}
+            </div>
+          </Card>
+        </section>
+      ) : null}
+
       <section className="mb-6">
         <h2 className="mb-3 font-serif text-lg">Quick actions</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -124,7 +150,7 @@ export default async function ResidentDashboardPage() {
           <QuickAction href="/announcements" title="Announcements" description="Read the latest building news." />
           <QuickAction href="/notifications" title="Notifications" description="Open your inbox." />
           <QuickAction href="/voting" title="Voting" description="Cast one vote per poll." />
-          <QuickAction href="/documents" title="Documents" description="House rules and files." comingSoon />
+          <QuickAction href="/documents" title="Documents" description="House rules and files." />
         </div>
       </section>
 
