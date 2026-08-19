@@ -1,0 +1,400 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrganizationType {
+  HOUSE_COUNCIL
+  MANAGEMENT_COMPANY
+}
+
+enum OrgRole {
+  ORG_ADMIN
+  MANAGER
+}
+
+enum BuildingRole {
+  RESIDENT
+  BUILDING_ADMIN
+}
+
+enum AnnouncementPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
+enum IssueCategory {
+  GENERAL
+  ELECTRICITY
+  WATER
+  HEATING
+  ELEVATOR
+  CLEANING
+  SECURITY
+  OTHER
+}
+
+enum IssueStatus {
+  REPORTED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum DocumentCategory {
+  MEETINGS
+  RULES
+  FINANCES
+  MAINTENANCE
+  CONTRACTS
+  OTHER
+}
+
+enum NotificationType {
+  ANNOUNCEMENT_IMPORTANT
+  ANNOUNCEMENT_URGENT
+  ISSUE_REPORTED
+  VOTE_CREATED
+  VOTE_CLOSING_SOON
+  SYSTEM
+}
+
+enum ActivityAction {
+  ANNOUNCEMENT_PUBLISHED
+  ISSUE_CREATED
+  ISSUE_STATUS_CHANGED
+  ISSUE_COMMENTED
+  VOTE_CREATED
+  VOTE_CAST
+  DOCUMENT_UPLOADED
+  MEMBER_ADDED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  imageUrl     String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  organizationMemberships OrganizationMembership[]
+  memberships             Membership[]
+  sessions                Session[]
+  announcements           Announcement[]
+  notifications           Notification[]
+  reportedIssues          Issue[]              @relation("IssueReporter")
+  issueComments           IssueComment[]
+  issueStatusChanges      IssueStatusHistory[]
+  createdVotes            Vote[]               @relation("VoteCreator")
+  voteResponses           VoteResponse[]
+  uploadedDocuments       Document[]
+  activityLogs            ActivityLog[]        @relation("ActivityActor")
+
+  @@index([email])
+}
+
+model Organization {
+  id        String           @id @default(cuid())
+  name      String
+  slug      String           @unique
+  type      OrganizationType
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  memberships OrganizationMembership[]
+  buildings   Building[]
+  activityLogs ActivityLog[]
+}
+
+model OrganizationMembership {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           OrgRole
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Building {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  slug           String
+  address        String
+  city           String
+  postalCode     String?
+  country        String   @default("North Macedonia")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartments    Apartment[]
+  memberships   Membership[]
+  announcements Announcement[]
+  notifications Notification[]
+  issues        Issue[]
+  votes         Vote[]
+  documents     Document[]
+  activityLogs  ActivityLog[]
+  sessions      Session[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([city])
+}
+
+model Apartment {
+  id         String   @id @default(cuid())
+  buildingId String
+  number     String
+  floor      Int?
+  entrance   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  building    Building     @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  memberships Membership[]
+  issues      Issue[]
+
+  @@unique([buildingId, number])
+  @@index([buildingId])
+}
+
+model Membership {
+  id          String       @id @default(cuid())
+  userId      String
+  buildingId  String
+  apartmentId String?
+  role        BuildingRole
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  building  Building   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  apartment Apartment? @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, buildingId])
+  @@index([buildingId])
+  @@index([userId])
+  @@index([apartmentId])
+  @@index([buildingId, role])
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  userId           String
+  tokenHash        String   @unique
+  expiresAt        DateTime
+  activeBuildingId String?
+  createdAt        DateTime @default(now())
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeBuilding Building? @relation(fields: [activeBuildingId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([tokenHash])
+}
+
+model Announcement {
+  id             String                @id @default(cuid())
+  buildingId     String
+  authorId       String
+  title          String
+  content        String
+  priority       AnnouncementPriority  @default(NORMAL)
+  attachmentUrl  String?
+  publishedAt    DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([buildingId, publishedAt])
+  @@index([authorId])
+  @@index([buildingId, priority])
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  buildingId String?
+  type       NotificationType
+  title      String
+  body       String
+  data       Json?
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  building Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@index([buildingId])
+}
+
+model Issue {
+  id          String        @id @default(cuid())
+  buildingId  String
+  apartmentId String?
+  reporterId  String
+  title       String
+  description String
+  category    IssueCategory
+  imageUrl    String?
+  status      IssueStatus   @default(REPORTED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  building      Building             @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  apartment     Apartment?           @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  reporter      User                 @relation("IssueReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  comments      IssueComment[]
+  statusHistory IssueStatusHistory[]
+
+  @@index([buildingId, status])
+  @@index([buildingId, createdAt])
+  @@index([reporterId])
+  @@index([category])
+}
+
+model IssueComment {
+  id        String   @id @default(cuid())
+  issueId   String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  issue  Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([issueId, createdAt])
+  @@index([authorId])
+}
+
+model IssueStatusHistory {
+  id          String      @id @default(cuid())
+  issueId     String
+  fromStatus  IssueStatus?
+  toStatus    IssueStatus
+  changedById String
+  createdAt   DateTime    @default(now())
+
+  issue     Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  changedBy User  @relation(fields: [changedById], references: [id], onDelete: Restrict)
+
+  @@index([issueId, createdAt])
+  @@index([changedById])
+}
+
+model Vote {
+  id          String   @id @default(cuid())
+  buildingId  String
+  createdById String
+  title       String
+  description String
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  building  Building       @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  createdBy User           @relation("VoteCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  options   VoteOption[]
+  responses VoteResponse[]
+
+  @@index([buildingId, startsAt, endsAt])
+  @@index([createdById])
+}
+
+model VoteOption {
+  id       String @id @default(cuid())
+  voteId   String
+  label    String
+  position Int
+
+  vote      Vote           @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  responses VoteResponse[]
+
+  @@index([voteId, position])
+}
+
+model VoteResponse {
+  id        String   @id @default(cuid())
+  voteId    String
+  optionId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  vote   Vote       @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  option VoteOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([voteId, userId])
+  @@index([optionId])
+  @@index([userId])
+}
+
+model Document {
+  id           String           @id @default(cuid())
+  buildingId   String
+  uploadedById String
+  title        String
+  description  String?
+  category     DocumentCategory
+  fileUrl      String
+  fileName     String
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  uploadedBy User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([buildingId, createdAt])
+  @@index([buildingId, category])
+  @@index([uploadedById])
+}
+
+model ActivityLog {
+  id             String         @id @default(cuid())
+  organizationId String?
+  buildingId     String?
+  actorId        String
+  action         ActivityAction
+  entityType     String
+  entityId       String
+  metadata       Json?
+  createdAt      DateTime       @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  building     Building?     @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  actor        User          @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([buildingId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([actorId])
+  @@index([entityType, entityId])
+}

@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Atrium
 
-## Getting Started
+A digital operating platform for residential buildings. First market: North Macedonia. Architecture is multi-tenant from day one.
 
-First, run the development server:
+Atrium is **not** a Viber/chat replacement. The **building** is the core entity. Residents, house councils, and management companies share one system. Access comes from memberships, never from client-supplied IDs.
+
+**Documentation (start here):** [docs/README.md](./docs/README.md)
+
+## Status
+
+| Phase | What | Status |
+| --- | --- | --- |
+| 1 | Postgres, Prisma, sessions, tenancy, roles, seed, three consoles | Done — [docs](./docs/phases/01-foundation.md) |
+| 2 | Announcements, issues, photos, history, activity, notification *writes* | Done — [docs](./docs/phases/02-announcements-and-issues.md) |
+| 2.5 | Polish, dashboards, in-app inbox, mobile, empty/loading/error | Done — [docs](./docs/phases/02.5-polish-and-notifications.md) |
+| 3 | Voting workflow | Not started — [roadmap](./docs/05-roadmap.md) |
+
+## Stack
+
+- Next.js 16 App Router, TypeScript, Tailwind CSS v4
+- PostgreSQL 16 (Docker, host port **5434**)
+- Prisma 7 with `@prisma/adapter-pg`
+- Zod, bcrypt sessions (`atrium_session` httpOnly cookie)
+
+## Setup
 
 ```bash
+cp .env.example .env
+docker compose up -d
+npm install
+npx prisma migrate deploy
+npx prisma generate
+npx prisma db seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Full command list and demo script: [docs/07-local-operations.md](./docs/07-local-operations.md).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demo credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role | Email | Password | Home |
+| --- | --- | --- | --- |
+| Manager | `manager@cityhome.mk` | `Manager123!` | `/manager/dashboard` |
+| Building admin | `admin@cityhome.mk` | `Admin123!` | `/admin/dashboard` |
+| Resident | `resident@cityhome.mk` | `Resident123!` | `/dashboard` |
 
-## Learn More
+Organization: **CityHome Management**. Buildings: Skopje Center 12, Aerodrom 25, Karposh 8, Centar 44, Vodnjanska 18. Admin and resident are on Skopje Center 12.
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture in one paragraph
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`proxy.ts` only checks that a session cookie exists. Layouts call `requireResidentContext` / `requireAdminContext` / `requireManagerContext`. Services authorize with `lib/permissions` and Prisma. Forms never supply the building id; the server session does. Notifications are per-user rows; the inbox never lists another user’s alerts.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+Organization → Building → Apartment
+                 ↓
+            Membership (RESIDENT | BUILDING_ADMIN)
+OrganizationMembership (ORG_ADMIN | MANAGER) → all org buildings
+```
 
-## Deploy on Vercel
+## Useful commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm test` | Auth and workflow tests (needs Postgres) |
+| `npm run lint` | ESLint |
+| `npm run db:studio` | Prisma Studio |
+| `npm run db:seed` | Re-seed (destructive to demo rows) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Do not run `db:reset` unless you intend to wipe the database.
