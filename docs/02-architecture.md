@@ -116,7 +116,7 @@ Inbox (`lib/notifications/service.ts`): list / unread count / mark read. Always 
 
 Presentation (`lib/notifications/presentation.ts`): labels and hrefs, safe to import from client components. Prisma stays out of the client bundle.
 
-`dispatchPushPlaceholder` exists so later web push can attach without changing callers.
+Dispatch (`lib/notifications/dispatch.ts`): after each inbox write, `dispatchNotifications(ids)` sends email (Resend) and web push (`web-push`) for the same row. Missing API keys are a no-op. Channel failure does not delete the inbox row. `dispatchPushPlaceholder` remains as an alias.
 
 ## What “good” looks like for a new domain
 

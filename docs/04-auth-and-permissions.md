@@ -37,7 +37,9 @@ Unauthorized users redirect to `/login`. Wrong-role users redirect to `getDefaul
 
 `proxy.ts` redirects to login if a protected path has **no cookie**. It does not verify the session signature or role. Forged cookies still fail in `getSessionFromCookie`. Missing cookies never hit RSC.
 
-Protected prefixes include `/dashboard`, `/admin`, `/manager`, `/notifications`, `/issues`, `/announcements`, `/voting`, `/documents`, and `/api/files`.
+Protected prefixes include `/dashboard`, `/admin`, `/manager`, `/notifications`, `/settings`, `/issues`, `/announcements`, `/voting`, `/documents`, `/api/files`, and `/api/push`.
+
+`/api/push/subscribe` uses `getAccessContext()`. The client never supplies `userId`.
 
 ## Permission helpers
 
@@ -74,6 +76,6 @@ Login redirects by highest console:
 
 ## Tests
 
-`tests/phase2.test.ts`, `tests/phase25.test.ts`, `tests/phase3.test.ts`, and `tests/phase4.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
+`tests/phase2.test.ts`, `tests/phase25.test.ts`, `tests/phase3.test.ts`, `tests/phase4.test.ts`, and `tests/phase5.test.ts` hit real Postgres. They load users with `tests/helpers.ts` (`loadContext(email)`), then call **services**, not the HTTP layer. That is the right layer to lock authorization: if the service forbids it, a compromised client cannot succeed.
 
 When you add a capability, add a test that the wrong role is rejected.

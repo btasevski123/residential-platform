@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type { NotificationType } from "@/generated/prisma/enums";
+import { dispatchNotifications } from "@/lib/notifications/dispatch";
 
 export type NotificationPayload = {
   userId: string;
@@ -12,7 +13,7 @@ export type NotificationPayload = {
 };
 
 export async function createNotification(payload: NotificationPayload) {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId: payload.userId,
       buildingId: payload.buildingId ?? null,
@@ -22,14 +23,17 @@ export async function createNotification(payload: NotificationPayload) {
       data: payload.data,
     },
   });
+
+  await dispatchSafely([notification.id]);
+  return notification;
 }
 
 export async function createNotifications(payloads: NotificationPayload[]) {
   if (payloads.length === 0) {
-    return { count: 0 };
+    return { count: 0, ids: [] as string[] };
   }
 
-  return prisma.notification.createMany({
+  const created = await prisma.notification.createManyAndReturn({
     data: payloads.map((payload) => ({
       userId: payload.userId,
       buildingId: payload.buildingId ?? null,
@@ -38,7 +42,12 @@ export async function createNotifications(payloads: NotificationPayload[]) {
       body: payload.body,
       data: payload.data,
     })),
+    select: { id: true },
   });
+
+  const ids = created.map((row) => row.id);
+  await dispatchSafely(ids);
+  return { count: ids.length, ids };
 }
 
 export async function notifyBuildingResidents(input: {
@@ -111,7 +120,14 @@ export async function notifyBuildingAdmins(input: {
   );
 }
 
-// Web push will attach here later without changing callers.
 export async function dispatchPushPlaceholder(notificationIds: string[]) {
-  return { queued: notificationIds.length };
+  return dispatchNotifications(notificationIds);
+}
+
+async function dispatchSafely(notificationIds: string[]) {
+  try {
+    await dispatchNotifications(notificationIds);
+  } catch (error) {
+    console.error("Notification dispatch failed", error);
+  }
 }

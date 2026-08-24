@@ -1,7 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { requireResidentContext } from "@/lib/auth/guards";
+import { getVapidPublicKey } from "@/lib/notifications/config";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
+import { FlashNotice } from "@/components/ui/flash-notice";
+import { NotificationPreferencesForm } from "@/components/notifications/notification-preferences-form";
 import { displayName } from "@/lib/utils";
 
 export default async function ProfilePage() {
@@ -10,7 +14,10 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="More" description="Your account, building, and upcoming tools." />
+      <Suspense>
+        <FlashNotice />
+      </Suspense>
+      <PageHeader title="More" description="Your account, building, and notification channels." />
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Card className="space-y-3">
           <p>
@@ -36,18 +43,32 @@ export default async function ProfilePage() {
             </p>
           ) : null}
         </Card>
-        <Card className="space-y-3">
-          <p className="font-medium">More in this building</p>
-          <Link href="/voting" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
-            Voting
-          </Link>
-          <Link href="/documents" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
-            Documents
-          </Link>
-          <Link href="/notifications" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
-            Notifications
-          </Link>
-        </Card>
+        <div className="space-y-4">
+          <Card className="space-y-3">
+            <p className="font-medium">More in this building</p>
+            <Link href="/voting" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
+              Voting
+            </Link>
+            <Link href="/documents" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
+              Documents
+            </Link>
+            <Link href="/notifications" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
+              Notifications
+            </Link>
+            <Link href="/settings" className="block rounded-lg bg-card-muted px-4 py-3 text-sm">
+              Notification settings
+            </Link>
+          </Card>
+          <Card className="space-y-3">
+            <p className="font-medium">How we reach you</p>
+            <NotificationPreferencesForm
+              emailEnabled={ctx.user.emailNotificationsEnabled}
+              pushEnabled={ctx.user.pushNotificationsEnabled}
+              pushAvailable={Boolean(getVapidPublicKey())}
+              returnTo="/profile"
+            />
+          </Card>
+        </div>
       </div>
     </>
   );

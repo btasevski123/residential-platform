@@ -51,7 +51,7 @@ These are later phases or out of scope for the current MVP. Do not implement the
 
 - Native iOS / Android apps (the web app is responsive first)
 - Chat / Viber replacement
-- Email, SMS, or web-push delivery (in-app notifications exist; transport comes later)
+- SMS, Viber, or native push (email and web push ride on the existing inbox; see [Phase 5](./phases/05-communications.md))
 - Payments, accounting, or marketplace
 - AI
 - Advanced maintenance / work-order systems

@@ -10,11 +10,9 @@ Nothing below is implemented unless a later phase doc says it is. Do not treat t
 
 **Status:** done. See [Phase 4](./phases/04-documents.md).
 
-## Phase 5 (next) — Richer communications
+## Phase 5 — Email and web push
 
-- Optional `ISSUE_UPDATE` enum if JSON `kind` becomes awkward
-- Email or web push **on top of** the existing Notification rows (`dispatchPushPlaceholder`)
-- Do not create a second notification table
+**Status:** done. See [Phase 5](./phases/05-communications.md).
 
 ## Later — Issue scope (private vs building)
 
@@ -66,6 +64,7 @@ This is the step from helpdesk tickets to a building operations record. It belon
 | Advanced maintenance | Work orders, vendors, SLAs — after issue scope stays simple |
 | Manager issue board | Portfolio aggregation was deferred on purpose |
 | Issue comments | `IssueComment` exists; UI does not |
+| Comms leftovers | `VOTE_CLOSING_SOON` cron, `ISSUE_UPDATE` enum, per-type prefs, digest, SMS |
 
 ## Order rationale
 

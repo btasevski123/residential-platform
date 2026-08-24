@@ -23,12 +23,13 @@ Read it before adding features. NIVIA is intended to become a large multi-tenant
 | [Phase 2.5 — Product polish and notification inbox](./phases/02.5-polish-and-notifications.md) | Done |
 | [Phase 3 — Voting](./phases/03-voting.md) | Done |
 | [Phase 4 — Documents](./phases/04-documents.md) | Done |
+| [Phase 5 — Email and web push](./phases/05-communications.md) | Done |
 
 ## Next
 
 | Document | Status |
 | --- | --- |
-| [Roadmap](./05-roadmap.md) | Phase 5+ planned |
+| [Roadmap](./05-roadmap.md) | Issue scope and later work |
 | [Conventions](./06-conventions.md) | How to add a feature without breaking the platform |
 | [Local operations](./07-local-operations.md) | Setup, demo accounts, commands, tests |
 

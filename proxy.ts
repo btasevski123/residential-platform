@@ -10,9 +10,11 @@ const protectedPrefixes = [
   "/voting",
   "/documents",
   "/profile",
+  "/settings",
   "/admin",
   "/manager",
   "/api/files",
+  "/api/push",
 ];
 
 export function proxy(request: NextRequest) {

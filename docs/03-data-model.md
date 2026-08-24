@@ -1,8 +1,8 @@
 # Data model
 
-Source of truth: `prisma/schema.prisma`. One migration so far: `prisma/migrations/20260819080001_init`.
+Source of truth: `prisma/schema.prisma`. Migrations: `20260819080001_init`, then additive `20260819152500_notification_channels`.
 
-The schema was designed in Phase 1 to cover later phases. Vote workflows shipped in Phase 3. Document workflows shipped in Phase 4.
+The schema was designed in Phase 1 to cover later phases. Vote workflows shipped in Phase 3. Document workflows shipped in Phase 4. Email and web push shipped in Phase 5 on the same `Notification` rows.
 
 ## Tenancy
 
@@ -75,6 +75,16 @@ Types currently in the enum:
 - `SYSTEM`
 
 Issue status updates to the reporter use `SYSTEM` plus `data.kind = "ISSUE_UPDATE"` so Phase 2.5 did not require a migration. UI labels that as “Issue update”.
+
+`User.emailNotificationsEnabled` and `User.pushNotificationsEnabled` (default true) gate channels. They are not a per-type matrix.
+
+### PushSubscription
+
+One browser endpoint per device. Bound to the session user on `/api/push/subscribe`. Unique `endpoint`. This is not a second inbox.
+
+### NotificationDelivery
+
+Audit / outbox for `EMAIL` | `PUSH` with `PENDING` | `SENT` | `FAILED`. Unique `(notificationId, channel)` so retries do not double-send. Not shown in the UI.
 
 ### Vote / VoteOption / VoteResponse
 

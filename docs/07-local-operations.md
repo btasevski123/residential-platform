@@ -21,6 +21,8 @@ Open http://localhost:3000.
 
 `DATABASE_URL` must use port **5434**. `AUTH_SECRET` in `.env.example` is for local use only.
 
+Email and web push are optional. Leave `RESEND_API_KEY` and VAPID keys unset for a local inbox-only demo. Generate VAPID with `npx web-push generate-vapid-keys`.
+
 Issue photos land in `uploads/` (gitignored). They are not stored in Postgres.
 
 ## Commands
@@ -53,7 +55,7 @@ Buildings: Skopje Center 12, Aerodrom 25, Karposh 8, Centar 44, Vodnjanska 18
 
 Admin and resident belong to **Skopje Center 12** (resident apartment **4**).
 
-## Demo script (after Phase 4)
+## Demo script (after Phase 5)
 
 ### A — Management company
 
@@ -121,6 +123,14 @@ Seed also has **Facade renovation this autumn** (open; Elena already voted) and 
 6. Admin can delete it; it disappears from the resident list.
 
 Seed also has **House rules 2026** and related files. If those rows still point at `/demo/...`, they list but do not download until you upload a new copy or re-seed.
+
+### I — Email and web push
+
+1. Log in as resident → **Settings** (or **More**). Email and browser push are on by default.
+2. Turn **Email** off and save. As admin, create a new vote. Resident inbox still gets `VOTE_CREATED`; no email is sent for that user.
+3. Turn email back on. Without `RESEND_API_KEY`, dispatch is a no-op and the inbox still works.
+4. With Resend configured, the same vote produces one email per opted-in resident, linking to `/voting/...`.
+5. With VAPID keys, enable push, allow the browser, then publish an urgent announcement. The lock-screen notification opens the same announcement path (session cookie, no magic login).
 
 ## Tests
 

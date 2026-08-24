@@ -115,6 +115,8 @@ async function resetDatabase() {
   await prisma.issueStatusHistory.deleteMany();
   await prisma.issueComment.deleteMany();
   await prisma.issue.deleteMany();
+  await prisma.notificationDelivery.deleteMany();
+  await prisma.pushSubscription.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.announcement.deleteMany();
   await prisma.document.deleteMany();

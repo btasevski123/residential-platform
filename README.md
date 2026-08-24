@@ -15,7 +15,7 @@ NIVIA is **not** a Viber/chat replacement. The **building** is the core entity. 
 | 2.5 | Polish, dashboards, in-app inbox, mobile, empty/loading/error | Done — [docs](./docs/phases/02.5-polish-and-notifications.md) |
 | 3 | Voting workflow | Done — [docs](./docs/phases/03-voting.md) |
 | 4 | Documents | Done — [docs](./docs/phases/04-documents.md) |
-| 5 | Email / web push on the existing inbox | Not started — [roadmap](./docs/05-roadmap.md) |
+| 5 | Email / web push on the existing inbox | Done — [docs](./docs/phases/05-communications.md) |
 
 ## Stack
 

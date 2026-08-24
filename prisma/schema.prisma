@@ -75,17 +75,30 @@ enum ActivityAction {
   MEMBER_ADDED
 }
 
+enum DeliveryChannel {
+  EMAIL
+  PUSH
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  firstName    String
-  lastName     String
-  phone        String?
-  imageUrl     String?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                         String   @id @default(cuid())
+  email                      String   @unique
+  passwordHash               String
+  firstName                  String
+  lastName                   String
+  phone                      String?
+  imageUrl                   String?
+  isActive                   Boolean  @default(true)
+  emailNotificationsEnabled  Boolean  @default(true)
+  pushNotificationsEnabled   Boolean  @default(true)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
 
   organizationMemberships OrganizationMembership[]
   memberships             Membership[]
@@ -99,6 +112,7 @@ model User {
   voteResponses           VoteResponse[]
   uploadedDocuments       Document[]
   activityLogs            ActivityLog[]        @relation("ActivityActor")
+  pushSubscriptions       PushSubscription[]
 
   @@index([email])
 }
@@ -246,12 +260,43 @@ model Notification {
   readAt     DateTime?
   createdAt  DateTime         @default(now())
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  building Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  building   Building?               @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  deliveries NotificationDelivery[]
 
   @@index([userId, readAt])
   @@index([userId, createdAt])
   @@index([buildingId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model NotificationDelivery {
+  id             String         @id @default(cuid())
+  notificationId String
+  channel        DeliveryChannel
+  status         DeliveryStatus @default(PENDING)
+  error          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
+  @@index([status])
 }
 
 model Issue {

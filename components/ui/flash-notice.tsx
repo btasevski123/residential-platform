@@ -14,6 +14,7 @@ const messages: Record<string, string> = {
   voted: "Your vote has been recorded.",
   "document-uploaded": "Document uploaded.",
   "document-deleted": "Document deleted.",
+  "prefs-saved": "Notification preferences saved.",
 };
 
 export function FlashNotice() {
