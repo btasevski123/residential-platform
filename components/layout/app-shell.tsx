@@ -39,7 +39,7 @@ export function AppShell({
   return (
     <div className="min-h-full overflow-x-hidden bg-background">
       <PushRegistrar enabled={pushEnabled} vapidPublicKey={vapidPublicKey} />
-      <header className="border-b border-border bg-card/80 backdrop-blur">
+      <header className="relative z-40 border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
             <Link href="/" className="font-serif text-lg tracking-tight">
@@ -48,7 +48,7 @@ export function AppShell({
             {eyebrow ? <p className="truncate text-xs text-muted">{eyebrow}</p> : null}
           </div>
           <NavLinks items={nav} className="hidden items-center gap-1 md:flex" />
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">
             <NotificationBell unreadCount={unreadCount} preview={notifications} viewer={viewer} />
             <UserMenu user={user} />
           </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import { markAllNotificationsReadAction } from "@/lib/notifications/actions";
 import { NotificationList } from "@/components/notifications/notification-list";
-import { Drawer } from "@/components/ui/drawer";
+import { getAnchoredPopoverStyle } from "@/lib/ui/popover-position";
 import type { NotificationRecord } from "@/lib/notifications/presentation";
 import type { ViewerKind } from "@/lib/navigation";
 
@@ -20,20 +21,35 @@ export function NotificationBell({
   viewer: ViewerKind;
 }) {
   const [open, setOpen] = useState(false);
-  const [desktop, setDesktop] = useState(true);
+  const [style, setStyle] = useState<ReturnType<typeof getAnchoredPopoverStyle> | null>(null);
   const [pending, startTransition] = useTransition();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const sync = () => setDesktop(media.matches);
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) {
+      return;
+    }
+
+    const update = () => {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) {
+        return;
+      }
+      setStyle(getAnchoredPopoverStyle(rect));
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [open]);
 
   useEffect(() => {
-    if (!open || !desktop) {
+    if (!open) {
       return;
     }
 
@@ -44,7 +60,7 @@ export function NotificationBell({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, desktop]);
+  }, [open]);
 
   const markAll = () => {
     startTransition(async () => {
@@ -54,7 +70,7 @@ export function NotificationBell({
   };
 
   const panel = (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-0 flex-1 flex-col p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-medium">Notifications</p>
         {unreadCount > 0 ? (
@@ -68,7 +84,14 @@ export function NotificationBell({
           </button>
         ) : null}
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        className="min-h-0 flex-1 overflow-y-auto"
+        onClick={(event) => {
+          if ((event.target as HTMLElement).closest("a")) {
+            setOpen(false);
+          }
+        }}
+      >
         <NotificationList
           notifications={preview}
           viewer={viewer}
@@ -89,8 +112,10 @@ export function NotificationBell({
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         className="relative inline-flex h-11 min-h-11 w-11 items-center justify-center rounded-md hover:bg-card-muted"
+        aria-expanded={open}
         aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
         onClick={() => setOpen((value) => !value)}
       >
@@ -102,25 +127,25 @@ export function NotificationBell({
         ) : null}
       </button>
 
-      {desktop && open ? (
-        <>
-          <button
-            type="button"
-            aria-label="Close notifications"
-            className="fixed inset-0 z-30 cursor-default"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 z-40 mt-2 w-[min(24rem,calc(100vw-2rem))] rounded-xl border border-border bg-card p-4 shadow-sm">
-            {panel}
-          </div>
-        </>
-      ) : null}
-
-      {!desktop ? (
-        <Drawer open={open} title="Notifications" onClose={() => setOpen(false)}>
-          {panel}
-        </Drawer>
-      ) : null}
+      {open && style
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                aria-label="Close notifications"
+                className="fixed inset-0 z-50 cursor-default"
+                onClick={() => setOpen(false)}
+              />
+              <div
+                className="fixed z-50 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+                style={style}
+              >
+                {panel}
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
