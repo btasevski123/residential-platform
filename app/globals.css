@@ -39,6 +39,8 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  /* Reserve scrollbar space so short↔tall page navigations don't shift layout */
+  scrollbar-gutter: stable;
 }
 
 body {
